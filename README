@@ -1,0 +1,77 @@
+bitfield-gmp
+============
+
+Version 0.0.1 (May, 2017)
+
+bitfield-gmp is a library of functions for converting between bit fields (or bit
+arrays) from bitfield package and real numbers from GMP.
+
+Installation
+------------
+
+To compile bitfield from source code:
+
+$ autoconf
+$ ./configure --prefix=DIRECTORY
+$ make
+
+This will build both a static and a shared version. To build just one of them,
+replace "make" with "make static" or "make shared".
+
+To test the compiled library:
+
+$ make test
+
+To build and run some example applications:
+
+$ make example
+
+The generic way to install the compiled files is:
+
+$ make install
+$ ldconfig
+
+However, one might prefer to use distro-specific installation mechanism (like
+"checkinstall") instead.
+
+Usage
+-----
+
+Using the functions provided by bitfield-gmp library in a project is
+straightforward. If bitfield-gmp library files are installed system-wide in
+standard locations, then one needs to (1) include a system version of the header
+file to the source
+
+#include <bitfield-gmp.h>
+
+and (2) add the "-lbitfield-gmp" flag to compiler instructions
+
+gcc ... -lbitfield
+
+Alternatively, if bitfield-gmp library is integrated into a project, then one
+needs to (1) include a local version of the header file to the source
+
+#include "PATH_TO_HEADER/bitfield-gmp.h"
+
+and (2) add the "-lbitfield" flag, along with the path to the header and path 
+to the library to compiler instructions
+
+gcc ... -I$(PATH_TO_HEADER) -L$(PATH_TO_LIBRARY) -lbitfield-gmp
+
+Comment: since the bindings are only needed when using both bitfield and gmp
+functions, the "-lbitfield-gmp" key will most probably need to be accompanied by
+"-lgmp" and "-lbitfield" keys.
+
+Functions
+---------
+
+bitfield_to_mpz copies a bit array into a multiple precision integer
+
+mpz_to_bitfield copies a multiple precision integer into a bit array
+
+Licensing
+---------
+
+bitfield-gmp is free software, and is released under the terms of the GNU
+General Public License version 3 or any later version. Please see the file
+called LICENSE.

@@ -1,0 +1,82 @@
+CC=@CC@
+export CC
+datarootdir=@datarootdir@
+prefix=@prefix@
+exec_prefix=@prefix@
+libdir=@libdir@
+mandir=@mandir@
+includedir=@includedir@
+AR=ar
+LIBS=-I.
+CFLAGS= -Wall -O3
+export CFLAGS
+VERSION=0.0.1
+TESTDIR=tests
+#EXAMPLEDIR=examples
+LD_LIBRARY_PATH := $(shell pwd):$(LD_LIBRARY_PATH)
+export LD_LIBRARY_PATH
+
+#.PHONY: test check man shared static install install-lib install-man install-header clean distclean uninstall uninstall-lib uninstall-man uninstall-header example examples
+.PHONY: test check man shared static install install-lib install-man install-header clean distclean uninstall uninstall-lib uninstall-man uninstall-header
+
+all: shared static
+
+shared: libbitfield-gmp.so.$(VERSION)
+libbitfield-gmp.so.$(VERSION): bitfield-gmp.c
+	$(CC) $(CFLAGS) -c -fpic bitfield-gmp.c -o shared.o -I. $(LIBS)
+	$(CC) $(CFLAGS) -shared -Wl,-soname,libbitfield-gmp.so.0 -o libbitfield-gmp.so.$(VERSION) shared.o $(LIBS)
+	for i in libbitfield-gmp.so.0 libbitfield-gmp.so; do ln -svf libbitfield-gmp.so.$(VERSION) $$i; done
+
+static: libbitfield-gmp.a
+libbitfield-gmp.a: bitfield-gmp.c
+	$(CC) $(CFLAGS) -c bitfield-gmp.c -o static.o $(LIBS)
+	$(AR) rcs libbitfield-gmp.a static.o
+
+test: check
+
+check:
+	$(MAKE) -C $(TESTDIR)
+
+#examples: example
+#
+#example:
+#	$(MAKE) -C $(EXAMPLEDIR)
+
+install: install-lib install-man install-header
+
+install-lib:
+	mkdir -p $(DESTDIR)$(libdir)
+	for i in libbitfield-gmp.so.0 libbitfield-gmp.so libbitfield-gmp.so.$(VERSION) libbitfield-gmp.a; do if [ -e $(DESTDIR)$(libdir)/$$i ]; then rm -v $(DESTDIR)$(libdir)/$$i; fi; done
+	install -m 0644 libbitfield-gmp.so.$(VERSION) $(DESTDIR)$(libdir)
+	ln -sv libbitfield-gmp.so.$(VERSION) $(DESTDIR)$(libdir)/libbitfield-gmp.so.0
+	ln -sv libbitfield-gmp.so.$(VERSION) $(DESTDIR)$(libdir)/libbitfield-gmp.so
+	install -m 0644 libbitfield-gmp.a $(DESTDIR)$(libdir)
+
+install-man:
+	$(MAKE) -C man install
+
+install-header:
+	mkdir -p $(DESTDIR)$(includedir)
+	install -m 644 bitfield-gmp.h $(DESTDIR)$(includedir)/bitfield-gmp.h
+
+clean:
+	rm -rvf *.a *.o *.so*
+#	$(MAKE) -C examples clean
+	$(MAKE) -C $(TESTDIR) clean
+
+distclean: clean
+	rm config.log config.status config.h Makefile
+	$(MAKE) -C man distclean
+#	$(MAKE) -C examples distclean
+	$(MAKE) -C $(TESTDIR) distclean
+
+uninstall: uninstall-lib uninstall-man uninstall-header
+
+uninstall-lib:
+	for i in libbitfield-gmp.so.0 libbitfield-gmp.so libbitfield-gmp.so.$(VERSION) libbitfield-gmp.a; do if [ -e $(DESTDIR)$(libdir)/$$i ]; then rm -v $(DESTDIR)$(libdir)/$$i; fi; done
+
+uninstall-man:
+	$(MAKE) -C man uninstall
+
+uninstall-header:
+	if [ -e $(DESTDIR)$(includedir)/bitfield-gmp.h ]; then rm -v $(DESTDIR)$(includedir)/bitfield-gmp.h; fi

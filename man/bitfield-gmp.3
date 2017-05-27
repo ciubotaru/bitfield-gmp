@@ -1,0 +1,16 @@
+.TH bitfield-gmp 3 "MAY 27, 2017" "bitfield-gmp 0.0.1" "Bitfield-GMP bindings"
+.SH NAME
+bitfield_to_mpz, mpz_to_bitfield \- convert bitween bit arrays and integer numbers.
+.SH SYNOPSIS
+.nf
+.B "#include <bitfield-gmp.h>
+.sp
+.BI "void bitfield_to_mpz (mpz_t "dst ", const struct bitfield *"src ");
+.BI "void mpz_to_bitfield (struct bitfield *"dst ", const mpz_t "src ");
+.fi
+.SH DATA TYPES
+"struct bitfield" is a bit array of arbitrary length. "mpz_t" is a multiple precision integer number.
+.SH DESCRIPTION
+\fIbitfield_to_mpz\fR function takes a properly initialized integer \fIdst\fR and a pointer to a properly initialized bit array \fIsrc\fR, and copies the bits, in LSB order, from \fIsrc\fR to \fIdst\fR. Trailing zeroes are ignored. The size of \fIdst\fR is automatically resized to fit the amount of copied data. \fImpz_to_bitfield\fR does the reverse.
+.SH AUTHOR
+Vitalie CIUBOTARU
